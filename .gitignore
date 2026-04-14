@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.idea/
+.env
+coverage/
+*.tsbuildinfo
+/http-client.private.env.json
+*.db

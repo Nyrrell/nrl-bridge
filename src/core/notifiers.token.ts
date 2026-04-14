@@ -1,0 +1,1 @@
+export const NOTIFIERS_TOKEN = 'NOTIFIERS_TOKEN';
