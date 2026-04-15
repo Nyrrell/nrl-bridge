@@ -6,12 +6,12 @@ import { NOTIFIERS_TOKEN } from '../core/notifiers.token';
 import { DiscordModule } from './discord/discord.module';
 
 @Module({
-  imports: [DiscordModule],
+  imports: [DiscordModule.register()],
   providers: [
     {
       provide: NOTIFIERS_TOKEN,
-      useFactory: (discord: DiscordDealsNotifier): Notifier[] => [discord],
-      inject: [DiscordDealsNotifier],
+      useFactory: (...notifiers: Notifier[]): Notifier[] => notifiers.filter(Boolean),
+      inject: [{ token: DiscordDealsNotifier, optional: true }],
     },
   ],
   exports: [NOTIFIERS_TOKEN],

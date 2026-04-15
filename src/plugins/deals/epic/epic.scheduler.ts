@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
-import { isPluginDisabled } from '../../../core/config';
 import { EpicService } from './epic.service';
 
 @Injectable()
@@ -10,7 +9,7 @@ export class EpicScheduler {
 
   constructor(private readonly epicService: EpicService) {}
 
-  @Cron('0 */12 * * *', { disabled: isPluginDisabled('epic') })
+  @Cron('0 */12 * * *')
   async handleCron(): Promise<void> {
     this.logger.debug('EpicController cron triggered');
     try {

@@ -1,24 +1,23 @@
-import { Module, Logger } from '@nestjs/common';
+import { Module, Logger, type DynamicModule } from '@nestjs/common';
 
 import { DiscordDealsConfigSchema, DISCORD_DEALS_CONFIG } from './discord.config';
 import { DiscordDealsNotifier } from './discord-deals.notifier';
 
-@Module({
-  providers: [
-    {
-      provide: DISCORD_DEALS_CONFIG,
-      useFactory: () => {
-        const result = DiscordDealsConfigSchema.safeParse(process.env);
-        if (!result.success) {
-          const logger = new Logger('DiscordModule');
-          logger.error('Invalid configuration', JSON.stringify(result.error.format()));
-          throw new Error('DiscordModule: invalid configuration, check DISCORD_DEALS_WEBHOOK_URL');
-        }
-        return result.data;
-      },
-    },
-    DiscordDealsNotifier,
-  ],
-  exports: [DiscordDealsNotifier],
-})
-export class DiscordModule {}
+@Module({})
+export class DiscordModule {
+  static register(): DynamicModule {
+    const result = DiscordDealsConfigSchema.safeParse(process.env);
+    if (!result.success) {
+      new Logger('DiscordModule').warn(
+        'Notifier disabled — missing configuration (DISCORD_DEALS_WEBHOOK_URL)',
+      );
+      return { module: DiscordModule };
+    }
+
+    return {
+      module: DiscordModule,
+      providers: [{ provide: DISCORD_DEALS_CONFIG, useValue: result.data }, DiscordDealsNotifier],
+      exports: [DiscordDealsNotifier],
+    };
+  }
+}

@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
-import { isPluginDisabled } from '../../../core/config';
 import { ItadService } from './itad.service';
 
 @Injectable()
@@ -10,7 +9,7 @@ export class ItadScheduler {
 
   constructor(private readonly itadService: ItadService) {}
 
-  @Cron('0 */6 * * *', { disabled: isPluginDisabled('itad') })
+  @Cron('0 */6 * * *')
   async handleCron(): Promise<void> {
     this.logger.debug('ItadScheduler cron triggered');
     try {

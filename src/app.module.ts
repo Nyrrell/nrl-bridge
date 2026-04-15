@@ -7,7 +7,7 @@ import { coreMigrations } from './core/migrations';
 import { CoreModule } from './core/core.module';
 
 @Module({
-  imports: [CoreModule, EpicModule, ItadModule],
+  imports: [CoreModule, EpicModule.register(), ItadModule.register()],
   providers: [
     MigrationRunner,
     {
