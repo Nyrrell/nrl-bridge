@@ -32,8 +32,8 @@ See `.env.example` for the full list.
 | `PORT`                      | `3000`      | HTTP server port                                              |
 | `DB_PATH`                   | `bridge.db` | Path to the SQLite database                                   |
 | `DISABLED_PLUGINS`          | *(empty)*   | Comma-separated list of plugins to disable (e.g. `epic,itad`) |
+| `RUN_ON_STARTUP`            | `false`     | Run all active cron tasks once immediately at startup         |
 | `DISCORD_DEALS_WEBHOOK_URL` | —           | Discord webhook URL for deal alerts                           |
 | `ITAD_API_KEY`              | —           | IsThereAnyDeal API key                                        |
 
-Missing core variables (`PORT`, `DB_PATH`, `LOG_LEVEL`) will crash the process at boot. 
 Missing plugin or notifier variables will auto-disable the affected module with a warning instead of crashing.

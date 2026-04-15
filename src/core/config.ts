@@ -4,6 +4,7 @@ const AppConfigSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   PORT: z.coerce.number().int().positive().default(3000),
   DB_PATH: z.string().min(1).default('bridge.db'),
+  RUN_ON_STARTUP: z.coerce.boolean().default(false),
 });
 
 export type AppConfig = z.infer<typeof AppConfigSchema>;

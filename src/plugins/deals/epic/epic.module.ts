@@ -20,6 +20,7 @@ export class EpicModule {
       module: EpicModule,
       imports: [CoreModule, NotifiersModule],
       providers: [EpicSource, EpicDbService, EpicService, EpicScheduler],
+      exports: [EpicScheduler],
     };
   }
 }

@@ -2,6 +2,7 @@ import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fa
 import { Logger, type LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
+import { STARTUP_TASKS_TOKEN, type StartupTask } from './core/startup.token';
 import { loadAppConfig } from './core/config';
 import { AppModule } from './app.module';
 
@@ -20,6 +21,20 @@ async function bootstrap(): Promise<void> {
   });
   await app.listen(config.PORT, '0.0.0.0');
   Logger.log(`nrl-bridge listening on port ${config.PORT}`);
+
+  if (config.RUN_ON_STARTUP) {
+    const startupLogger = new Logger('Startup');
+    let tasks: StartupTask[] = [];
+    try {
+      tasks = app.get<StartupTask[]>(STARTUP_TASKS_TOKEN);
+    } catch {
+      // No plugins registered startup tasks
+    }
+    for (const task of tasks) {
+      startupLogger.log(`Running ${task.constructor.name} on startup`);
+      await task.handleCron();
+    }
+  }
 }
 
 bootstrap().catch((err: unknown) => {

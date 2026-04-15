@@ -35,6 +35,7 @@ export class ItadModule {
         ItadService,
         ItadScheduler,
       ],
+      exports: [ItadScheduler],
     };
   }
 }
