@@ -21,7 +21,7 @@ export class ItadModule {
 
     const result = ItadConfigSchema.safeParse(process.env);
     if (!result.success) {
-      logger.warn('Plugin disabled — missing configuration (ITAD_API_KEY)');
+      logger.warn('Plugin disabled - missing configuration (ITAD_API_KEY)');
       return { module: ItadModule };
     }
 

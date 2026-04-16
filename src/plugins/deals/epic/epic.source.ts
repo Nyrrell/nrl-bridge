@@ -47,6 +47,7 @@ export class EpicSource implements Source<Deal> {
     return {
       id: `deals:epic:${slug}`,
       source: 'deals',
+      plugin: 'epic',
       title: game.title,
       description: game.description,
       thumbnailUrl: thumbnail,

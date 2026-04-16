@@ -115,6 +115,7 @@ export class PrimeSource implements Source<Deal> {
     return {
       id: `deals:prime:${item.id}`,
       source: 'deals',
+      plugin: 'prime',
       store: 'Prime Gaming',
       title: item.assets.title,
       description: item.assets.shortformDescription,

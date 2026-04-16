@@ -2,6 +2,7 @@ import type { Item } from '../../core/interfaces/item.interface';
 
 export interface Deal extends Item {
   source: 'deals';
+  plugin: string;
   title: string;
   store?: string;
   description: string;

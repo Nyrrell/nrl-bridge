@@ -54,6 +54,7 @@ export class ItadSource implements Source<Deal> {
     return {
       id: `deals:itad:${item.deal.shop.id}:${item.slug}`,
       source: 'deals',
+      plugin: 'itad',
       title: item.title,
       store: item.deal.shop.name,
       description: `Free on ${item.deal.shop.name}`,
