@@ -1,6 +1,6 @@
 # nrl-bridge
 
-A personal modular notification hub — pulls from sources, receives webhooks, and relays alerts.
+A personal modular notification hub – pulls from sources, receives webhooks, and relays alerts.
 
 ## Stack
 
@@ -26,14 +26,17 @@ pnpm run start:dev
 
 See `.env.example` for the full list.
 
-| Variable                    | Default     | Description                                                   |
-|-----------------------------|-------------|---------------------------------------------------------------|
-| `LOG_LEVEL`                 | `info`      | `debug` / `info` / `warn` / `error`                           |
-| `PORT`                      | `3000`      | HTTP server port                                              |
-| `DB_PATH`                   | `bridge.db` | Path to the SQLite database                                   |
+| Variable                    | Default     | Description                                                  |
+|-----------------------------|-------------|--------------------------------------------------------------|
+| `LOG_LEVEL`                 | `info`      | `debug` / `info` / `warn` / `error`                          |
+| `PORT`                      | `3000`      | HTTP server port                                             |
+| `DB_PATH`                   | `bridge.db` | Path to the SQLite database                                  |
 | `DISABLED_PLUGINS`          | *(empty)*   | Comma-separated list of plugins to disable (e.g. `epic,itad`) |
-| `RUN_ON_STARTUP`            | `false`     | Run all active cron tasks once immediately at startup         |
-| `DISCORD_DEALS_WEBHOOK_URL` | —           | Discord webhook URL for deal alerts                           |
-| `ITAD_API_KEY`              | —           | IsThereAnyDeal API key                                        |
+| `RUN_ON_STARTUP`            | `false`     | Run all active cron tasks once immediately at startup        |
+| `LOCALE`                    | `fr-FR`     | Used for date formatting                                     |
+| `TIMEZONE`                  | `Europe/Paris` | Used for date formatting                                     |
+| `COUNTRY`                   | `FR`        | Country code for API queries                    |
+| `DISCORD_DEALS_WEBHOOK_URL` | -           | Discord webhook URL for deal alerts                          |
+| `ITAD_API_KEY`              | -           | IsThereAnyDeal API key                                       |
 
 Missing plugin or notifier variables will auto-disable the affected module with a warning instead of crashing.

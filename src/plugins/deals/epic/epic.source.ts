@@ -1,16 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 
+import { APP_CONFIG, type AppConfig } from '../../../core/config';
 import type { Source } from '../../../core/interfaces/source.interface';
 import type { EpicGame } from './epic.types';
 import type { Deal } from '../deal.types';
 
-const EPIC_API_URL =
-  'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=en-US&country=US&allowCountries=US';
+const EPIC_API_BASE = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions';
 
 @Injectable()
 export class EpicSource implements Source<Deal> {
+  constructor(@Inject(APP_CONFIG) private readonly appConfig: AppConfig) {}
+
   async fetch(): Promise<Deal[]> {
-    const response = await fetch(EPIC_API_URL);
+    const url = new URL(EPIC_API_BASE);
+    url.searchParams.set('locale', this.appConfig.LOCALE);
+    url.searchParams.set('country', this.appConfig.COUNTRY);
+    url.searchParams.set('allowCountries', this.appConfig.COUNTRY);
+
+    const response = await fetch(url.toString());
     if (!response.ok) {
       throw new Error(`Epic API responded with ${response.status}`);
     }
@@ -51,7 +58,7 @@ export class EpicSource implements Source<Deal> {
       title: game.title,
       description: game.description,
       thumbnailUrl: thumbnail,
-      url: `https://store.epicgames.com/en-US/p/${slug}`,
+      url: `https://store.epicgames.com/${this.appConfig.LOCALE}/p/${slug}`,
       originalPrice: game.price.totalPrice.fmtPrice.originalPrice,
       endDate,
     };

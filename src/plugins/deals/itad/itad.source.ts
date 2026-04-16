@@ -1,15 +1,19 @@
 import { Injectable, Inject } from '@nestjs/common';
 
 import type { Source } from '../../../core/interfaces/source.interface';
-import { ITAD_CONFIG, type ItadConfig } from './itad.config';
 import type { ItadDealItem, ItadDealsResponse } from './itad.types';
+import { APP_CONFIG, type AppConfig } from '../../../core/config';
+import { ITAD_CONFIG, type ItadConfig } from './itad.config';
 import type { Deal } from '../deal.types';
 
 const ITAD_DEALS_URL = 'https://api.isthereanydeal.com/deals/v2';
 
 @Injectable()
 export class ItadSource implements Source<Deal> {
-  constructor(@Inject(ITAD_CONFIG) private readonly config: ItadConfig) {}
+  constructor(
+    @Inject(ITAD_CONFIG) private readonly config: ItadConfig,
+    @Inject(APP_CONFIG) private readonly appConfig: AppConfig,
+  ) {}
 
   async fetch(): Promise<Deal[]> {
     const deals: Deal[] = [];
@@ -19,7 +23,7 @@ export class ItadSource implements Source<Deal> {
     do {
       const url = new URL(ITAD_DEALS_URL);
       url.searchParams.set('key', this.config.ITAD_API_KEY);
-      url.searchParams.set('country', 'FR');
+      url.searchParams.set('country', this.appConfig.COUNTRY);
       url.searchParams.set('limit', String(limit));
       url.searchParams.set('offset', String(offset));
       url.searchParams.set('filter', 'N4IgxgrgLiBcoFsCWA7OBGADJgNCBAhgB4bYC+ZQA==='); // Price cut 100%
@@ -57,7 +61,7 @@ export class ItadSource implements Source<Deal> {
       plugin: 'itad',
       title: item.title,
       store: item.deal.shop.name,
-      description: `Free on ${item.deal.shop.name}`,
+      description: `Gratuit sur ${item.deal.shop.name}`,
       thumbnailUrl: item.assets.boxart,
       url: item.deal.url,
       originalPrice,

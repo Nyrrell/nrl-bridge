@@ -5,6 +5,13 @@ const AppConfigSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   DB_PATH: z.string().min(1).default('bridge.db'),
   RUN_ON_STARTUP: z.coerce.boolean().default(false),
+  LOCALE: z.string().default('fr-FR'),
+  TIMEZONE: z.string().default('Europe/Paris'),
+  COUNTRY: z
+    .string()
+    .length(2)
+    .transform((s) => s.toUpperCase())
+    .default('FR'),
 });
 
 export type AppConfig = z.infer<typeof AppConfigSchema>;
