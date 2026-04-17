@@ -4,8 +4,8 @@ GET localhost:3000/health
 
 
 // ITAD API
-### GET deals cut off 100%
-GET https://api.isthereanydeal.com/deals/v2?key={{itad_api_key}}&filter=N4IgxgrgLiBcoFsCWA7OBGADJgNCBAhgB4bYC+ZQA===
+### GET deals order by cut desc
+GET https://api.isthereanydeal.com/deals/v2?key={{itad_api_key}}&sort=-cut
 
 ### GET Shops
 GET https://api.isthereanydeal.com/service/shops/v1?country=FR

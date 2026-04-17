@@ -26,7 +26,7 @@ export class ItadSource implements Source<Deal> {
       url.searchParams.set('country', this.appConfig.COUNTRY);
       url.searchParams.set('limit', String(limit));
       url.searchParams.set('offset', String(offset));
-      url.searchParams.set('filter', 'N4IgxgrgLiBcoFsCWA7OBGADJgNCBAhgB4bYC+ZQA==='); // Price cut 100%
+      url.searchParams.set('sort', '-cut');
 
       const response = await fetch(url.toString());
 
@@ -42,7 +42,12 @@ export class ItadSource implements Source<Deal> {
 
       deals.push(...freeBatch);
 
-      if (!data.hasMore) break;
+      const batchHasNonFree = data.list.some(
+        (item) => item.deal.cut !== 100 || item.deal.price.amount > 0,
+      );
+
+      if (batchHasNonFree || !data.hasMore) break;
+
       offset += limit;
     } while (true);
 
