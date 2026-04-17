@@ -28,6 +28,6 @@ export async function processDeals(
       await notifier.send(newDeals);
     }
   }
-  await store.insertDeals(newDeals);
   await seenItems.markSeen(newDeals);
+  await store.insertDeals(newDeals);
 }

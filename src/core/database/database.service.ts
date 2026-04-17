@@ -20,10 +20,10 @@ export class DatabaseService {
   readonly db: CoreKysely;
 
   constructor(dbPath: string) {
+    const database = new Database(dbPath);
+    database.pragma('foreign_keys = ON');
     this.db = new Kysely<CoreSchema>({
-      dialect: new SqliteDialect({
-        database: new Database(dbPath),
-      }),
+      dialect: new SqliteDialect({ database }),
     });
   }
 }
