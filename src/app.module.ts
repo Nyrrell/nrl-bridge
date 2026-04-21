@@ -7,14 +7,31 @@ import { ItadModule, ItadScheduler, itadMigrations } from './plugins/deals/itad'
 import { STARTUP_TASKS_TOKEN, type StartupTask } from './core/startup.token';
 import { coreMigrations } from './core/migrations';
 import { CoreModule } from './core/core.module';
+import {
+  TwitchPrimeModule,
+  TwitchPrimeScheduler,
+  twitchPrimeMigrations,
+} from './plugins/twitch-prime';
 
 @Module({
-  imports: [CoreModule, PrimeModule.register(), EpicModule.register(), ItadModule.register()],
+  imports: [
+    CoreModule,
+    PrimeModule.register(),
+    EpicModule.register(),
+    ItadModule.register(),
+    TwitchPrimeModule.register(),
+  ],
   providers: [
     MigrationRunner,
     {
       provide: MIGRATIONS_TOKEN,
-      useValue: [...coreMigrations, ...primeMigrations, ...epicMigrations, ...itadMigrations],
+      useValue: [
+        ...coreMigrations,
+        ...primeMigrations,
+        ...epicMigrations,
+        ...itadMigrations,
+        ...twitchPrimeMigrations,
+      ],
     },
     {
       provide: STARTUP_TASKS_TOKEN,
@@ -24,6 +41,7 @@ import { CoreModule } from './core/core.module';
         { token: PrimeScheduler, optional: true },
         { token: EpicScheduler, optional: true },
         { token: ItadScheduler, optional: true },
+        { token: TwitchPrimeScheduler, optional: true },
       ],
     },
   ],
