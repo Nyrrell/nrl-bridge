@@ -2,6 +2,7 @@ import { Module, Logger, type DynamicModule } from '@nestjs/common';
 
 import { GotifyTwitchPrimeNotifier } from './gotify-twitch-prime.notifier';
 import { GotifyDealsNotifier } from './gotify-deals.notifier';
+import { resolveNotifierConfig } from '../notifier-config';
 import { CoreModule } from '../../core/core.module';
 import {
   GotifyDealsConfigSchema,
@@ -17,28 +18,32 @@ export class GotifyModule {
     const providers = [];
     const exports = [];
 
-    const dealsResult = GotifyDealsConfigSchema.safeParse(process.env);
-    if (dealsResult.success) {
+    const dealsConfig = resolveNotifierConfig(
+      GotifyDealsConfigSchema,
+      ['GOTIFY_EPIC_TOKEN', 'GOTIFY_ITAD_TOKEN', 'GOTIFY_PRIME_TOKEN'],
+      'Gotify deals',
+      logger,
+    );
+    if (dealsConfig) {
       providers.push(
-        { provide: GOTIFY_DEALS_CONFIG, useValue: dealsResult.data },
+        { provide: GOTIFY_DEALS_CONFIG, useValue: dealsConfig },
         GotifyDealsNotifier,
       );
       exports.push(GotifyDealsNotifier);
-    } else {
-      logger.warn(
-        'Deals notifier disabled - missing GOTIFY_URL or no GOTIFY_(EPIC|ITAD|PRIME)_TOKEN set',
-      );
     }
 
-    const primeResult = GotifyTwitchPrimeConfigSchema.safeParse(process.env);
-    if (primeResult.success) {
+    const primeConfig = resolveNotifierConfig(
+      GotifyTwitchPrimeConfigSchema,
+      ['GOTIFY_TWITCH_PRIME_TOKEN'],
+      'Gotify Twitch Prime',
+      logger,
+    );
+    if (primeConfig) {
       providers.push(
-        { provide: GOTIFY_TWITCH_PRIME_CONFIG, useValue: primeResult.data },
+        { provide: GOTIFY_TWITCH_PRIME_CONFIG, useValue: primeConfig },
         GotifyTwitchPrimeNotifier,
       );
       exports.push(GotifyTwitchPrimeNotifier);
-    } else {
-      logger.warn('Twitch Prime notifier disabled - missing GOTIFY_URL or GOTIFY_TWITCH_PRIME_TOKEN');
     }
 
     return {

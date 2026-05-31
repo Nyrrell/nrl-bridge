@@ -41,13 +41,9 @@ See `.env.example` for the full list. Missing plugin or notifier variables will 
 
 ### Plugin: deals
 
-| Variable                        | Required | Description                                   |
-|---------------------------------|----------|-----------------------------------------------|
-| `DISCORD_DEALS_WEBHOOK_URL`     | yes      | Discord webhook URL for deal alerts           |
-| `ITAD_API_KEY`                  | yes      | IsThereAnyDeal API key                        |
-| `DISCORD_DEALS_EPIC_THREAD_ID`  | no       | Post Epic deals to a specific Discord thread  |
-| `DISCORD_DEALS_ITAD_THREAD_ID`  | no       | Post ITAD deals to a specific Discord thread  |
-| `DISCORD_DEALS_PRIME_THREAD_ID` | no       | Post Prime deals to a specific Discord thread |
+| Variable       | Required | Description            |
+|----------------|----------|------------------------|
+| `ITAD_API_KEY` | yes      | IsThereAnyDeal API key |
 
 ### Plugin: twitch-prime
 
@@ -57,11 +53,42 @@ See `.env.example` for the full list. Missing plugin or notifier variables will 
 
 Setup: register `TWITCH_PRIME_REDIRECT_URI` in your [Twitch app](https://dev.twitch.tv/console), then visit `GET /twitch-prime/auth` to authenticate.
 
-| Variable                           | Required | Description                                                             |
-|------------------------------------|----------|-------------------------------------------------------------------------|
-| `TWITCH_CLIENT_ID`                 | yes      | Twitch application client ID                                            |
-| `TWITCH_CLIENT_SECRET`             | yes      | Twitch application client secret                                        |
-| `TWITCH_PRIME_REDIRECT_URI`        | yes      | OAuth redirect URI (e.g. `http://localhost:3000/twitch-prime/callback`) |
-| `DISCORD_TWITCH_PRIME_WEBHOOK_URL` | yes      | Discord webhook URL for Prime sub reminders                             |
-| `TWITCH_PRIME_CHANNEL`             | no       | Default channel to watch (can be set via `GET /twitch-prime`)           |
-| `DISCORD_TWITCH_PRIME_THREAD_ID`   | no       | Post reminders to a specific Discord thread                             |
+| Variable                    | Required | Description                                                             |
+|-----------------------------|----------|-------------------------------------------------------------------------|
+| `TWITCH_CLIENT_ID`          | yes      | Twitch application client ID                                            |
+| `TWITCH_CLIENT_SECRET`      | yes      | Twitch application client secret                                        |
+| `TWITCH_PRIME_REDIRECT_URI` | yes      | OAuth redirect URI (e.g. `http://localhost:3000/twitch-prime/callback`) |
+| `TWITCH_PRIME_CHANNEL`      | no       | Default channel to watch (can be set via `GET /twitch-prime`)           |
+
+## Notifiers
+
+Alerts are relayed by **Discord** and/or **Gotify**, which are independent and equal: use either one, or both. A notifier activates as soon as you set any of its variables. Once activated it is validated strictly, so a partial config (e.g. a token without its URL) crashes the boot with an explicit message rather than failing silently. Set up **at least one** notifier, otherwise alerts go nowhere.
+
+In each table below, `Required` means required **once that notifier is in use**.
+
+### Notifier: discord
+
+The deals notifier activates with `DISCORD_DEALS_WEBHOOK_URL`; the Twitch Prime notifier with `DISCORD_TWITCH_PRIME_WEBHOOK_URL`. They are independent.
+
+| Variable                           | Required | Description                                |
+|------------------------------------|----------|--------------------------------------------|
+| `DISCORD_DEALS_WEBHOOK_URL`        | yes      | Webhook URL for deal alerts                |
+| `DISCORD_DEALS_EPIC_THREAD_ID`     | no       | Post Epic deals to a specific thread       |
+| `DISCORD_DEALS_ITAD_THREAD_ID`     | no       | Post ITAD deals to a specific thread       |
+| `DISCORD_DEALS_PRIME_THREAD_ID`    | no       | Post Prime deals to a specific thread      |
+| `DISCORD_TWITCH_PRIME_WEBHOOK_URL` | yes      | Webhook URL for Twitch Prime sub reminders |
+| `DISCORD_TWITCH_PRIME_THREAD_ID`   | no       | Post reminders to a specific thread        |
+
+### Notifier: gotify
+
+The deals notifier activates with at least one deal token; the Twitch Prime notifier with `GOTIFY_TWITCH_PRIME_TOKEN`. Each source maps to its own [Gotify application token](https://gotify.net/docs/pushmsg), so Epic / ITAD / Prime / Twitch Prime can land in different apps. `GOTIFY_URL` is shared by all of them.
+
+| Variable                       | Required | Description                                                 |
+|--------------------------------|----------|-------------------------------------------------------------|
+| `GOTIFY_URL`                   | yes      | Base URL of your Gotify server                              |
+| `GOTIFY_EPIC_TOKEN`            | no       | App token for Epic deals (one deal token at least)          |
+| `GOTIFY_ITAD_TOKEN`            | no       | App token for ITAD deals (one deal token at least)          |
+| `GOTIFY_PRIME_TOKEN`           | no       | App token for Amazon Prime deals (one deal token at least)  |
+| `GOTIFY_DEALS_PRIORITY`        | no       | Priority `0-10` shared by the three deal tokens (default 5) |
+| `GOTIFY_TWITCH_PRIME_TOKEN`    | yes      | App token for Twitch Prime sub reminders                    |
+| `GOTIFY_TWITCH_PRIME_PRIORITY` | no       | Priority `0-10` for Twitch Prime reminders (default 5)      |

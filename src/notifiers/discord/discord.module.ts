@@ -2,6 +2,7 @@ import { Module, Logger, type DynamicModule } from '@nestjs/common';
 
 import { DiscordTwitchPrimeNotifier } from './discord-twitch-prime.notifier';
 import { DiscordDealsNotifier } from './discord-deals.notifier';
+import { resolveNotifierConfig } from '../notifier-config';
 import { CoreModule } from '../../core/core.module';
 import {
   DiscordDealsConfigSchema,
@@ -17,26 +18,37 @@ export class DiscordModule {
     const providers = [];
     const exports = [];
 
-    const dealsResult = DiscordDealsConfigSchema.safeParse(process.env);
-    if (dealsResult.success) {
+    const dealsConfig = resolveNotifierConfig(
+      DiscordDealsConfigSchema,
+      [
+        'DISCORD_DEALS_WEBHOOK_URL',
+        'DISCORD_DEALS_EPIC_THREAD_ID',
+        'DISCORD_DEALS_ITAD_THREAD_ID',
+        'DISCORD_DEALS_PRIME_THREAD_ID',
+      ],
+      'Discord deals',
+      logger,
+    );
+    if (dealsConfig) {
       providers.push(
-        { provide: DISCORD_DEALS_CONFIG, useValue: dealsResult.data },
+        { provide: DISCORD_DEALS_CONFIG, useValue: dealsConfig },
         DiscordDealsNotifier,
       );
       exports.push(DiscordDealsNotifier);
-    } else {
-      logger.warn('Deals notifier disabled - missing DISCORD_DEALS_WEBHOOK_URL');
     }
 
-    const primeResult = DiscordTwitchPrimeConfigSchema.safeParse(process.env);
-    if (primeResult.success) {
+    const primeConfig = resolveNotifierConfig(
+      DiscordTwitchPrimeConfigSchema,
+      ['DISCORD_TWITCH_PRIME_WEBHOOK_URL', 'DISCORD_TWITCH_PRIME_THREAD_ID'],
+      'Discord Twitch Prime',
+      logger,
+    );
+    if (primeConfig) {
       providers.push(
-        { provide: DISCORD_TWITCH_PRIME_CONFIG, useValue: primeResult.data },
+        { provide: DISCORD_TWITCH_PRIME_CONFIG, useValue: primeConfig },
         DiscordTwitchPrimeNotifier,
       );
       exports.push(DiscordTwitchPrimeNotifier);
-    } else {
-      logger.warn('Twitch Prime notifier disabled - missing DISCORD_TWITCH_PRIME_WEBHOOK_URL');
     }
 
     return {
