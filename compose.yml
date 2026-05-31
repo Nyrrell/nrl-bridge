@@ -1,0 +1,13 @@
+services:
+  node:
+    container_name: nrl-bridge
+    build:
+      context: .
+      dockerfile: Containerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - TZ=Europe/Paris
+    env_file: .env
+    volumes:
+      - ./bridge.db:/app/bridge.db
