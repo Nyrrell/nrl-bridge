@@ -2,6 +2,7 @@
   "name": "nrl-bridge",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
     "build": "nest build",
     "start": "node dist/main.js",
@@ -38,8 +39,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@nestjs/core",
       "better-sqlite3",
-      "@nestjs/core"
+      "unrs-resolver"
     ]
   },
   "jest": {
