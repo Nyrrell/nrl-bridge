@@ -1,3 +1,6 @@
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
+
 import { Kysely, SqliteDialect } from 'kysely';
 import { Injectable } from '@nestjs/common';
 import Database from 'better-sqlite3';
@@ -20,6 +23,7 @@ export class DatabaseService {
   readonly db: CoreKysely;
 
   constructor(dbPath: string) {
+    mkdirSync(dirname(dbPath), { recursive: true });
     const database = new Database(dbPath);
     database.pragma('foreign_keys = ON');
     this.db = new Kysely<CoreSchema>({
