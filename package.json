@@ -21,6 +21,7 @@
     "@nestjs/schedule": "^6.1.1",
     "better-sqlite3": "^12.9.0",
     "kysely": "^0.28.16",
+    "nodemailer": "^8.0.10",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.3.6"
@@ -31,6 +32,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
+    "@types/nodemailer": "^8.0.0",
     "jest": "^30.3.0",
     "prettier": "^3.8.2",
     "ts-jest": "^29.4.9",

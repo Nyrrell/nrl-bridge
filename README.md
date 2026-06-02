@@ -92,3 +92,25 @@ The deals notifier activates with at least one deal token; the Twitch Prime noti
 | `GOTIFY_DEALS_PRIORITY`        | no       | Priority `0-10` shared by the three deal tokens (default 5) |
 | `GOTIFY_TWITCH_PRIME_TOKEN`    | yes      | App token for Twitch Prime sub reminders                    |
 | `GOTIFY_TWITCH_PRIME_PRIORITY` | no       | Priority `0-10` for Twitch Prime reminders (default 5)      |
+
+### Notifier: mail
+
+Sends alerts over SMTP (HTML with a plain-text fallback). The SMTP connection is shared; recipients drive activation and routing:
+
+- `MAIL_TO` set: mail is active for **all** sources, with `MAIL_TO` as default recipient.
+- `MAIL_<SOURCE>_TO` set: overrides the recipient for that source, or activates it alone if `MAIL_TO` is unset.
+- Effective recipient of a source = `MAIL_<SOURCE>_TO` if set, otherwise `MAIL_TO`.
+
+So "everything to me" = set only `MAIL_TO`; "mail only Twitch Prime" = set only `MAIL_TWITCH_PRIME_TO`. Any recipient set makes the SMTP block required.
+
+| Variable               | Required | Description                                                        |
+|------------------------|----------|--------------------------------------------------------------------|
+| `MAIL_SMTP_HOST`       | yes      | SMTP server host                                                   |
+| `MAIL_SMTP_PORT`       | no       | SMTP port (default `587`)                                          |
+| `MAIL_SMTP_SECURE`     | no       | `true` for implicit TLS (port 465), `false` for STARTTLS (default) |
+| `MAIL_SMTP_USER`       | no       | SMTP username (omit for relays without auth)                       |
+| `MAIL_SMTP_PASS`       | no       | SMTP password (omit for relays without auth)                       |
+| `MAIL_FROM`            | yes      | From address                                                       |
+| `MAIL_TO`              | no       | Global recipient(s), comma-separated. Activates all sources        |
+| `MAIL_DEALS_TO`        | no       | Override recipient(s) for deals                                    |
+| `MAIL_TWITCH_PRIME_TO` | no       | Override recipient(s) for Twitch Prime reminders                   |
