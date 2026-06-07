@@ -2,10 +2,17 @@
 ### GET Healthcheck
 GET localhost:3000/health
 
+### POST test notifier - deals (sends a sample to every active notifier handling 'deals')
+POST localhost:3000/test/deals
+x-admin-secret: {{admin_secret}}
+
+### POST test notifier - twitch-prime
+POST localhost:3000/test/twitch-prime
+x-admin-secret: {{admin_secret}}
 
 // ITAD API
 ### GET deals order by cut desc
-GET https://api.isthereanydeal.com/deals/v2?key={{itad_api_key}}&sort=-cut
+GET https://api.isthereanydeal.com/deals/v2?key={{itad_api_key}}&country=FR&sort=-cut
 
 ### GET Shops
 GET https://api.isthereanydeal.com/service/shops/v1?country=FR

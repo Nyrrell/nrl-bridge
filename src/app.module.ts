@@ -5,6 +5,7 @@ import { PrimeModule, PrimeScheduler, primeMigrations } from './plugins/deals/pr
 import { EpicModule, EpicScheduler, epicMigrations } from './plugins/deals/epic';
 import { ItadModule, ItadScheduler, itadMigrations } from './plugins/deals/itad';
 import { STARTUP_TASKS_TOKEN, type StartupTask } from './core/startup.token';
+import { TestModule } from './notifiers/test/test.module';
 import { coreMigrations } from './core/migrations';
 import { CoreModule } from './core/core.module';
 import {
@@ -20,6 +21,7 @@ import {
     EpicModule.register(),
     ItadModule.register(),
     TwitchPrimeModule.register(),
+    TestModule.register(),
   ],
   providers: [
     MigrationRunner,

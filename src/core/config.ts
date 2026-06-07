@@ -12,6 +12,7 @@ const AppConfigSchema = z.object({
     .length(2)
     .transform((s) => s.toUpperCase())
     .default('FR'),
+  ADMIN_SECRET: z.string().min(1).optional(),
 });
 
 export type AppConfig = z.infer<typeof AppConfigSchema>;

@@ -38,6 +38,7 @@ See `.env.example` for the full list. Missing plugin or notifier variables will 
 | `TIMEZONE`         | `Europe/Paris` | Used for date formatting                                      |
 | `COUNTRY`          | `FR`           | Country code for API queries                                  |
 | `DISABLED_PLUGINS` | *(empty)*      | Comma-separated list of plugins to disable (e.g. `epic,itad`) |
+| `ADMIN_SECRET`     | *(empty)*      | Secret for admin endpoints (e.g. `POST /test/:source`). Unset disables them |
 
 ### Plugin: deals
 
@@ -114,3 +115,14 @@ So "everything to me" = set only `MAIL_TO`; "mail only Twitch Prime" = set only 
 | `MAIL_TO`              | no       | Global recipient(s), comma-separated. Activates all sources        |
 | `MAIL_DEALS_TO`        | no       | Override recipient(s) for deals                                    |
 | `MAIL_TWITCH_PRIME_TO` | no       | Override recipient(s) for Twitch Prime reminders                   |
+
+## Testing notifiers
+
+When `ADMIN_SECRET` is set, an admin endpoint lets you fire a sample notification through every active notifier that handles a given source, without waiting for a real event:
+
+```bash
+curl -X POST -H "x-admin-secret: $ADMIN_SECRET" http://localhost:3000/test/deals
+curl -X POST -H "x-admin-secret: $ADMIN_SECRET" http://localhost:3000/test/twitch-prime
+```
+
+`POST /test/:source` routes a sample item to all notifiers whose `canHandle(source)` matches (Discord, Gotify, mail...), so it exercises the real send path and lands in your real channels. The endpoint is protected by `ADMIN_SECRET` via the `x-admin-secret` header; leaving `ADMIN_SECRET` unset removes the route entirely. Unknown sources return `404`, a missing or wrong secret returns `401`.
