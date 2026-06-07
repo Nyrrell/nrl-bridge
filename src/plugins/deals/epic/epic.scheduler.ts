@@ -9,7 +9,7 @@ export class EpicScheduler {
 
   constructor(private readonly epicService: EpicService) {}
 
-  @Cron('0 */12 * * *')
+  @Cron('0 */6 * * *')
   async handleCron(): Promise<void> {
     this.logger.debug('EpicController cron triggered');
     try {
