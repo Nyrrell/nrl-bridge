@@ -32,6 +32,7 @@ See `.env.example` for the full list. Missing plugin or notifier variables will 
 |--------------------|----------------|---------------------------------------------------------------|
 | `LOG_LEVEL`        | `info`         | `debug` / `info` / `warn` / `error`                           |
 | `PORT`             | `3000`         | HTTP server port                                              |
+| `HOST`             | `0.0.0.0`      | HTTP listen address (`127.0.0.1` behind a local reverse proxy) |
 | `DB_PATH`          | `bridge.db`    | Path to the SQLite database                                   |
 | `RUN_ON_STARTUP`   | `false`        | Run all active cron tasks once immediately at startup         |
 | `LOCALE`           | `fr-FR`        | Used for date formatting                                      |

@@ -19,8 +19,8 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
     logger: LOG_LEVEL_MAP[config.LOG_LEVEL],
   });
-  await app.listen(config.PORT, '0.0.0.0');
-  Logger.log(`nrl-bridge listening on port ${config.PORT}`);
+  await app.listen(config.PORT, config.HOST);
+  Logger.log(`nrl-bridge listening on ${config.HOST}:${config.PORT}`);
 
   if (config.RUN_ON_STARTUP) {
     const startupLogger = new Logger('Startup');
