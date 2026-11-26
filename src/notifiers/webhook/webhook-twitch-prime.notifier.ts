@@ -3,9 +3,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import { WEBHOOK_TWITCH_PRIME_CONFIG, type WebhookTwitchPrimeConfig } from './webhook.config';
 import type { TwitchPrimeItem } from '../../plugins/twitch-prime/twitch-prime.types';
 import type { Notifier } from '../../core/interfaces/notifier.interface';
-import { buildTwitchPrimeMessage } from './templates/twitch-prime.message';
+import { twitchPrimeVars } from './templates/twitch-prime.template';
 import type { Item } from '../../core/interfaces/item.interface';
-import { postMessage } from './webhook-client';
+import { buildTarget, postJson } from './webhook-client';
+import { renderTemplate } from './webhook-template';
 
 @Injectable()
 export class WebhookTwitchPrimeNotifier implements Notifier<TwitchPrimeItem> {
@@ -18,13 +19,14 @@ export class WebhookTwitchPrimeNotifier implements Notifier<TwitchPrimeItem> {
   }
 
   async send(items: Item[]): Promise<void> {
-    const primeItems = items as TwitchPrimeItem[];
-    for (const item of primeItems) {
-      const message = buildTwitchPrimeMessage(item, {
-        priority: this.config.WEBHOOK_TWITCH_PRIME_PRIORITY,
-        sender: this.config.WEBHOOK_SENDER,
-      });
-      await postMessage(this.config.WEBHOOK_URL, this.config.WEBHOOK_TWITCH_PRIME_TOKEN, message);
+    const target = buildTarget(
+      this.config.WEBHOOK_URL,
+      this.config.WEBHOOK_AUTH_HEADER,
+      this.config.WEBHOOK_TWITCH_PRIME_TOKEN,
+    );
+    for (const item of items as TwitchPrimeItem[]) {
+      const body = renderTemplate(this.config.WEBHOOK_TWITCH_PRIME_TEMPLATE, twitchPrimeVars(item));
+      await postJson(target, body);
     }
   }
 }

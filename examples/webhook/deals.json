@@ -1,0 +1,20 @@
+{
+  "title": "{{title}}",
+  "content": "Gratuit jusqu'au {{endDate}} ({{originalPrice}})\n{{description}}",
+  "priority": "normal",
+  "tone": "success",
+  "sender": "nrl-bridge",
+  "click_url": "{{url}}",
+  "dedupe_key": "{{id}}",
+  "embeds": [
+    {
+      "color": 3066993,
+      "thumbnail": { "url": "{{thumbnailUrl}}" },
+      "fields": [
+        { "name": "Prix original", "value": "{{originalPrice}}", "inline": true },
+        { "name": "Gratuit jusqu'au", "value": "{{endDate}}", "inline": true }
+      ],
+      "footer": { "text": "{{store}}" }
+    }
+  ]
+}

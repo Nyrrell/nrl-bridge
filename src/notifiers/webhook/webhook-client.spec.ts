@@ -1,7 +1,27 @@
-import { postMessage } from './webhook-client';
+import { buildTarget, postJson } from './webhook-client';
 
-describe('postMessage', () => {
-  const message = { title: 'Hello', priority: 'normal' as const };
+describe('buildTarget', () => {
+  it('puts the token in the auth header', () => {
+    const target = buildTarget(
+      'https://example.org/api',
+      { name: 'Authorization', value: 'Bearer {{token}}' },
+      'secret',
+    );
+    expect(target).toEqual({
+      url: 'https://example.org/api',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer secret' },
+    });
+  });
+
+  it('puts the token in the URL, encoded, without auth header', () => {
+    const target = buildTarget('https://example.org/message?token={{token}}', undefined, 'a&b');
+    expect(target.url).toBe('https://example.org/message?token=a%26b');
+    expect(target.headers).toEqual({ 'Content-Type': 'application/json' });
+  });
+});
+
+describe('postJson', () => {
+  const target = { url: 'https://example.org/api', headers: { 'X-Key': 'k' } };
   let fetchMock: jest.Mock;
 
   beforeEach(() => {
@@ -9,20 +29,18 @@ describe('postMessage', () => {
     global.fetch = fetchMock;
   });
 
-  it('posts JSON with a bearer token to the exact URL', async () => {
+  it('posts the rendered body', async () => {
     fetchMock.mockResolvedValue({ ok: true });
-    await postMessage('https://example.org/api/messages', 'secret', message);
-    expect(fetchMock).toHaveBeenCalledWith('https://example.org/api/messages', {
+    await postJson(target, { title: 'Hello' });
+    expect(fetchMock).toHaveBeenCalledWith('https://example.org/api', {
       method: 'POST',
-      headers: { Authorization: 'Bearer secret', 'Content-Type': 'application/json' },
-      body: JSON.stringify(message),
+      headers: { 'X-Key': 'k' },
+      body: '{"title":"Hello"}',
     });
   });
 
   it('throws with status and body on failure', async () => {
     fetchMock.mockResolvedValue({ ok: false, status: 400, text: () => Promise.resolve('bad') });
-    await expect(postMessage('https://example.org', 'secret', message)).rejects.toThrow(
-      'Webhook message failed: 400 - bad',
-    );
+    await expect(postJson(target, {})).rejects.toThrow('Webhook message failed: 400 - bad');
   });
 });

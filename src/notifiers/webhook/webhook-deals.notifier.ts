@@ -4,9 +4,10 @@ import { WEBHOOK_DEALS_CONFIG, type WebhookDealsConfig } from './webhook.config'
 import type { Notifier } from '../../core/interfaces/notifier.interface';
 import type { Item } from '../../core/interfaces/item.interface';
 import { APP_CONFIG, type AppConfig } from '../../core/config';
-import { buildDealsMessage } from './templates/deals.message';
 import type { Deal } from '../../plugins/deals/deal.types';
-import { postMessage } from './webhook-client';
+import { buildTarget, postJson } from './webhook-client';
+import { dealVars } from './templates/deals.template';
+import { renderTemplate } from './webhook-template';
 
 @Injectable()
 export class WebhookDealsNotifier implements Notifier<Deal> {
@@ -40,14 +41,13 @@ export class WebhookDealsNotifier implements Notifier<Deal> {
       return;
     }
 
+    const target = buildTarget(this.config.WEBHOOK_URL, this.config.WEBHOOK_AUTH_HEADER, token);
     for (const deal of deals) {
-      const message = buildDealsMessage(deal, {
+      const vars = dealVars(deal, {
         locale: this.appConfig.LOCALE,
         timezone: this.appConfig.TIMEZONE,
-        priority: this.config.WEBHOOK_DEALS_PRIORITY,
-        sender: this.config.WEBHOOK_SENDER,
       });
-      await postMessage(this.config.WEBHOOK_URL, token, message);
+      await postJson(target, renderTemplate(this.config.WEBHOOK_DEALS_TEMPLATE, vars));
     }
     this.logger.debug(`Sent ${deals.length} message(s) to webhook (plugin: ${plugin})`);
   }

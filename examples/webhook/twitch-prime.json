@@ -1,0 +1,9 @@
+{
+  "title": "Ton sub Twitch Prime est disponible !",
+  "content": "Tu peux utiliser ton abonnement Prime sur la chaîne {{channel}} ce mois-ci.",
+  "priority": "normal",
+  "tone": "info",
+  "sender": "nrl-bridge",
+  "click_url": "{{channelUrl}}",
+  "dedupe_key": "{{id}}"
+}

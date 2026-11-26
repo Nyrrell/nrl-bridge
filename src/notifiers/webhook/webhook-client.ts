@@ -1,17 +1,24 @@
-import type { WebhookMessage } from './webhook.types';
+import type { JsonValue, WebhookTarget } from './webhook.types';
+import { substitute } from './webhook-template';
 
-export async function postMessage(
+// Resolves {{token}} in the URL and the auth header for one token.
+export function buildTarget(
   url: string,
+  authHeader: { name: string; value: string } | undefined,
   token: string,
-  message: WebhookMessage,
-): Promise<void> {
-  const response = await fetch(url, {
+): WebhookTarget {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (authHeader) {
+    headers[authHeader.name] = substitute(authHeader.value, { token });
+  }
+  return { url: substitute(url, { token: encodeURIComponent(token) }), headers };
+}
+
+export async function postJson(target: WebhookTarget, body: JsonValue): Promise<void> {
+  const response = await fetch(target.url, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
+    headers: target.headers,
+    body: JSON.stringify(body),
   });
   if (!response.ok) {
     const text = await response.text();

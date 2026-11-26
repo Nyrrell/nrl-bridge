@@ -97,45 +97,58 @@ The deals notifier activates with at least one deal token; the Twitch Prime noti
 
 ### Notifier: webhook
 
-A generic JSON notifier for any receiver that accepts a `POST` with a Bearer token. The deals notifier activates with at least one deal token; the Twitch Prime notifier with `WEBHOOK_TWITCH_PRIME_TOKEN`. `WEBHOOK_URL` is shared and used as-is (no path is appended); each source has its own token, so the receiver can route Epic / ITAD / Prime / Twitch Prime separately.
+A generic JSON notifier: you write the JSON body yourself, as a template, so any receiver that accepts a JSON `POST` works (a self-hosted notifier, a proprietary API, your own script). The deals notifier activates with at least one deal token; the Twitch Prime notifier with `WEBHOOK_TWITCH_PRIME_TOKEN`. Each source has its own token, so the receiver can route Epic / ITAD / Prime / Twitch Prime separately.
 
-| Variable                        | Required | Description                                                          |
-|---------------------------------|----------|----------------------------------------------------------------------|
-| `WEBHOOK_URL`                   | yes      | Full URL of the receiving endpoint                                   |
-| `WEBHOOK_SENDER`                | no       | Value of the `sender` field (default `nrl-bridge`)                   |
-| `WEBHOOK_EPIC_TOKEN`            | no       | Bearer token for Epic deals (one deal token at least)                |
-| `WEBHOOK_ITAD_TOKEN`            | no       | Bearer token for ITAD deals (one deal token at least)                |
-| `WEBHOOK_PRIME_TOKEN`           | no       | Bearer token for Amazon Prime deals (one deal token at least)        |
-| `WEBHOOK_DEALS_PRIORITY`        | no       | `silent`, `normal` or `urgent`, shared by the deal tokens (default `normal`) |
-| `WEBHOOK_TWITCH_PRIME_TOKEN`    | yes      | Bearer token for Twitch Prime sub reminders                          |
-| `WEBHOOK_TWITCH_PRIME_PRIORITY` | no       | `silent`, `normal` or `urgent` (default `normal`)                    |
+| Variable                        | Required | Description                                                                      |
+|---------------------------------|----------|----------------------------------------------------------------------------------|
+| `WEBHOOK_URL`                   | yes      | Full URL of the endpoint, used as-is. May contain `{{token}}` (URL-encoded)      |
+| `WEBHOOK_AUTH_HEADER`           | no       | `Name: value` header, `{{token}}` allowed. Default `Authorization: Bearer {{token}}`, empty to send none |
+| `WEBHOOK_EPIC_TOKEN`            | no       | Token for Epic deals (one deal token at least)                                   |
+| `WEBHOOK_ITAD_TOKEN`            | no       | Token for ITAD deals (one deal token at least)                                   |
+| `WEBHOOK_PRIME_TOKEN`           | no       | Token for Amazon Prime deals (one deal token at least)                           |
+| `WEBHOOK_DEALS_TEMPLATE`        | yes      | Path to the JSON template for deals                                              |
+| `WEBHOOK_TWITCH_PRIME_TOKEN`    | yes      | Token for Twitch Prime sub reminders                                             |
+| `WEBHOOK_TWITCH_PRIME_TEMPLATE` | yes      | Path to the JSON template for Twitch Prime                                       |
 
-One request per item, `Content-Type: application/json`, `Authorization: Bearer <token>`:
+There is no built-in body: the receiver's format cannot be guessed, so each active notifier needs its template, and a missing one crashes the boot. Start from the examples in [`examples/webhook/`](examples/webhook/). In the container, only `data/` is mounted: copy your templates there (e.g. `WEBHOOK_DEALS_TEMPLATE=data/webhook/deals.json`).
 
-```json
-{
-  "title": "Some Game",
-  "content": "Markdown body",
-  "priority": "normal",
-  "tone": "success",
-  "sender": "nrl-bridge",
-  "click_url": "https://store.example.com/deal",
-  "dedupe_key": "epic:epic:abc123",
-  "embeds": [
-    {
-      "color": 3066993,
-      "thumbnail": { "url": "https://..." },
-      "fields": [{ "name": "Prix original", "value": "19,99 €", "inline": true }],
-      "footer": { "text": "Gratuit sur Epic Games Store" }
-    }
-  ]
-}
+#### Templates
+
+A template is any JSON document. `{{name}}` placeholders are replaced in every string value; one request is sent per item, with `Content-Type: application/json`.
+
+- Substitution works on the parsed JSON, so a value (quotes, newlines...) can never break it.
+- A string that is **only** a placeholder takes the variable's type (`"{{endDateTs}}"` becomes a number) and is **removed** when the value is empty, along with any object or array left empty by that removal. Elsewhere, an empty value becomes an empty string.
+- Templates are read and checked at boot: invalid JSON or an unknown variable crashes with an explicit message.
+- The token is never available in the body, only in `WEBHOOK_URL` and `WEBHOOK_AUTH_HEADER`.
+
+| Source         | Variables |
+|----------------|-----------|
+| deals          | `id`, `plugin`, `title`, `description`, `url`, `store`, `originalPrice`, `thumbnailUrl`, `endDate` (formatted with `LOCALE` / `TIMEZONE`, `Inconnu` if unknown), `endDateTs` (Unix seconds, empty if unknown) |
+| twitch-prime   | `id`, `channel`, `channelUrl` |
+
+`id` is stable per item: use it as an idempotency key if your receiver supports one.
+
+Examples in [`examples/webhook/`](examples/webhook/), all checked by the test suite:
+
+| File                 | Content |
+|----------------------|---------|
+| `deals.json`         | Rich message: title, Markdown content, priority, tone, sender, click URL, idempotency key, Discord-style embed with thumbnail, fields and footer |
+| `twitch-prime.json`  | Same shape for Twitch Prime reminders |
+| `deals.minimal.json` | Flat `title` / `message` body |
+
+Example for a receiver that takes the token in the query string and a flat body:
+
+```bash
+WEBHOOK_URL=https://push.example.com/message?token={{token}}
+WEBHOOK_AUTH_HEADER=
+WEBHOOK_DEALS_TEMPLATE=data/webhook/deals.json
 ```
 
-- `priority`: `silent`, `normal` or `urgent`. `tone`: `success`, `info`, `warning` or `error`.
-- `dedupe_key` is the item id: a receiver can use it to drop a resend.
-- `embeds` follow the Discord embed format. Absent fields are omitted, never sent empty.
-- Any non-2xx response is treated as a failure (the item is not marked as seen).
+```json
+{ "title": "{{title}}", "message": "Free until {{endDate}}: {{url}}", "priority": 5 }
+```
+
+Any non-2xx response is treated as a failure (the item is not marked as seen and is retried on the next run).
 
 ### Notifier: mail
 

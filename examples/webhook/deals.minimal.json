@@ -1,0 +1,4 @@
+{
+  "title": "{{title}}",
+  "message": "Free until {{endDate}}: {{url}}"
+}
