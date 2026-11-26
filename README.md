@@ -1,4 +1,11 @@
-# tightbeam
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <img src="assets/logo.svg" alt="" width="96" height="96">
+  </picture>
+</p>
+
+<h1 align="center">tightbeam</h1>
 
 A personal modular notification hub – pulls from sources, receives webhooks, and relays alerts.
 
