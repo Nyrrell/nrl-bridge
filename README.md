@@ -1,4 +1,4 @@
-# nrl-bridge
+# tightbeam
 
 A personal modular notification hub – pulls from sources, receives webhooks, and relays alerts.
 

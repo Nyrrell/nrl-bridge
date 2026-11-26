@@ -1,6 +1,6 @@
 services:
   node:
-    container_name: nrl-bridge
+    container_name: tightbeam
     build:
       context: .
       dockerfile: Containerfile

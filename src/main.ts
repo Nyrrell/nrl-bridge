@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
     logger: LOG_LEVEL_MAP[config.LOG_LEVEL],
   });
   await app.listen(config.PORT, config.HOST);
-  Logger.log(`nrl-bridge listening on ${config.HOST}:${config.PORT}`);
+  Logger.log(`tightbeam listening on ${config.HOST}:${config.PORT}`);
 
   if (config.RUN_ON_STARTUP) {
     const startupLogger = new Logger('Startup');

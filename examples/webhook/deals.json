@@ -3,7 +3,7 @@
   "content": "Gratuit jusqu'au {{endDate}} ({{originalPrice}})\n{{description}}",
   "priority": "normal",
   "tone": "success",
-  "sender": "nrl-bridge",
+  "sender": "tightbeam",
   "click_url": "{{url}}",
   "dedupe_key": "{{id}}",
   "embeds": [
