@@ -169,3 +169,13 @@ curl -X POST -H "x-admin-secret: $ADMIN_SECRET" http://localhost:3000/test/twitc
 ```
 
 `POST /test/:source` routes a sample item to all notifiers whose `canHandle(source)` matches (Discord, Gotify, mail...), so it exercises the real send path and lands in your real channels. The endpoint is protected by `ADMIN_SECRET` via the `x-admin-secret` header; leaving `ADMIN_SECRET` unset removes the route entirely. Unknown sources return `404`, a missing or wrong secret returns `401`.
+## Releases
+
+Versions follow [SemVer](https://semver.org/) and are marked with annotated `vX.Y.Z` git tags, kept in sync with `package.json`. To cut a release from a clean working tree:
+
+```sh
+pnpm version patch --message "bump version to %s"   # or minor / major
+git push --follow-tags
+```
+
+`pnpm version` bumps `package.json`, commits it and creates the matching tag.
